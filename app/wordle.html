@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle 中文版</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .game-container {
+            text-align: center;
+        }
+        
+        h1 {
+            color: #1a1a1a;
+            margin-bottom: 30px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin: 20px 0;
+        }
+        
+        .row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .cell {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #d3d6da;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+        
+        .cell.guess {
+            background-color: #ffffff;
+        }
+        
+        .cell.correct {
+            background-color: #6aaa64;
+            color: white;
+        }
+        
+        .cell.present {
+            background-color: #c9b458;
+            color: white;
+        }
+        
+        .cell.absent {
+            background-color: #787c7e;
+            color: white;
+        }
+        
+        .keyboard {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+            margin: 20px 0;
+        }
+        
+        .key {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #d3d6da;
+            border-radius: 4px;
+            font-weight: bold;
+            user-select: none;
+        }
+        
+        .key.enter {
+            grid-column: span 2;
+        }
+        
+        .key.backspace {
+            grid-column: span 2;
+        }
+        
+        .key.used {
+            background-color: #787c7e;
+        }
+        
+        .key.present {
+            background-color: #c9b458;
+        }
+        
+        .key.correct {
+            background-color: #6aaa64;
+        }
+        
+        .message {
+            margin: 20px 0;
+            font-size: 18px;
+            font-weight: bold;
+            min-height: 24px;
+        }
+        
+        .instructions {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .instructions h3 {
+            margin-top: 0;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        @media (max-width: 600px) {
+            .cell {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+            .key {
+                height: 40px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Wordle 中文版</h1>
+        
+        <div class="message" id="message"></div>
+        
+        <div class="grid" id="grid">
+            <!-- 6 rows of 5 cells each -->
+            <div class="row" id="row0">
+                <div class="cell guess" data-row="0" data-col="0"></div>
+                <div class="cell guess" data-row="0" data-col="1"></div>
+                <div class="cell guess" data-row="0" data-col="2"></div>
+                <div class="cell guess" data-row="0" data-col="3"></div>
+                <div class="cell guess" data-row="0" data-col="4"></div>
+            </div>
+            <div class="row" id="row1">
+                <div class="cell guess" data-row="1" data-col="0"></div>
+                <div class="cell guess" data-row="1" data-col="1"></div>
+                <div class="cell guess" data-row="1" data-col="2"></div>
+                <div class="cell guess" data-row="1" data-col="3"></div>
+                <div class="cell guess" data-row="1" data-col="4"></div>
+            </div>
+            <div class="row" id="row2">
+                <div class="cell guess" data-row="2" data-col="0"></div>
+                <div class="cell guess" data-row="2" data-col="1"></div>
+                <div class="cell guess" data-row="2" data-col="2"></div>
+                <div class="cell guess" data-row="2" data-col="3"></div>
+                <div class="cell guess" data-row="2" data-col="4"></div>
+            </div>
+            <div class="row" id="row3">
+                <div class="cell guess" data-row="3" data-col="0"></div>
+                <div class="cell guess" data-row="3" data-col="1"></div>
+                <div class="cell guess" data-row="3" data-col="2"></div>
+                <div class="cell guess" data-row="3" data-col="3"></div>
+                <div class="cell guess" data-row="3" data-col="4"></div>
+            </div>
+            <div class="row" id="row4">
+                <div class="cell guess" data-row="4" data-col="0"></div>
+                <div class="cell guess" data-row="4" data-col="1"></div>
+                <div class="cell guess" data-row="4" data-col="2"></div>
+                <div class="cell guess" data-row="4" data-col="3"></div>
+                <div class="cell guess" data-row="4" data-col="4"></div>
+            </div>
+            <div class="row" id="row5">
+                <div class="cell guess" data-row="5" data-col="0"></div>
+                <div class="cell guess" data-row="5" data-col="1"></div>
+                <div class="cell guess" data-row="5" data-col="2"></div>
+                <div class="cell guess" data-row="5" data-col="3"></div>
+                <div class="cell guess" data-row="5" data-col="4"></div>
+            </div>
+        </div>
+        
+        <div class="keyboard" id="keyboard">
+            <div class="key" data-key="Q">Q</div>
+            <div class="key" data-key="W">W</div>
+            <div class="key" data-key="E">E</div>
+            <div class="key" data-key="R">R</div>
+            <div class="key" data-key="T">T</div>
+            <div class="key" data-key="Y">Y</div>
+            <div class="key" data-key="U">U</div>
+            <div class="key" data-key="I">I</div>
+            <div class="key" data-key="O">O</div>
+            <div class="key" data-key="P">P</div>
+            
+            <div class="key" data-key="A">A</div>
+            <div class="key" data-key="S">S</div>
+            <div class="key" data-key="D">D</div>
+            <div class="key" data-key="F">F</div>
+            <div class="key" data-key="G">G</div>
+            <div class="key" data-key="H">H</div>
+            <div class="key" data-key="J">J</div>
+            <div class="key" data-key="K">K</div>
+            <div class="key" data-key="L">L</div>
+            
+            <div class="key enter" data-key="ENTER">Enter</div>
+            <div class="key" data-key="Z">Z</div>
+            <div class="key" data-key="X">X</div>
+            <div class="key" data-key="C">C</div>
+            <div class="key" data-key="V">V</div>
+            <div class="key" data-key="B">B</div>
+            <div class="key" data-key="N">N</div>
+            <div class="key" data-key="M">M</div>
+            <div class="key backspace" data-key="BACKSPACE">⌫</div>
+        </div>
+        
+        <div class="instructions">
+            <h3>游戏规则</h3>
+            <ul>
+                <li>每天一局，目标是猜出5个字的中文词语</li>
+                <li>每次输入5个字，按 Enter 提交</li>
+                <li>绿色：该字在正确位置</li>
+                <li>黄色：该字存在但位置错误</li>
+                <li>灰色：该字不存在于答案中</li>
+                <li>最多6次尝试</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="wordle.js"></script>
+</body>
+</html>

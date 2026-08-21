@@ -1,0 +1,22 @@
+<!-- 简化后的核心逻辑 -->
+<!--浏览器里的模块加载器，它的核心作用就是让你在浏览器中直接加载和运行 React/TypeScript 代码，而不需要 Webpack 或 Vite 这些构建工具。-->
+<script type="module">
+  const { transform } = await import('https://esm.sh/@babel/standalone@7.25.6');
+  const cache = new Map();
+
+  async function loadModule(url) {
+    if (cache.has(url)) return cache.get(url);
+    const src = await (await fetch(url)).text();
+    const compiled = transform(src, {
+      presets: [['react'], ['typescript', { allExtensions: true, isTSX: true }]],
+      filename: url,
+    }).code;
+    const resolved = await rewriteRelativeImports(compiled, url);
+    const blob = new Blob([resolved], { type: 'application/javascript' });
+    const blobUrl = URL.createObjectURL(blob);
+    cache.set(url, blobUrl);
+    return blobUrl;
+  }
+
+  await import(await loadModule(new URL('./App.tsx', location.href).href));
+</script>
